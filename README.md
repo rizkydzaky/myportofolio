@@ -43,3 +43,6 @@ Link Gemini : https://share.gemini.google/t9EW5EJHBjhw
 
 - Deklarasi Penggunaan AI
 Dalam pengerjaan Tugas 3, saya menggunakan AI sebagai alat bantu untuk memahami konsep Django, seperti ModelForm, CSRF token, CRUD, JSON, serialization, dan deserialization. AI juga digunakan untuk membantu menemukan dan memahami error yang muncul selama proses pengerjaan. Implementasi kode disesuaikan dengan struktur project dan diuji secara mandiri menggunakan python manage.py runserver serta pengujian langsung pada halaman web dan endpoint JSON.
+
+
+Link Gemini : https://share.gemini.google/vmjU27125cc4
