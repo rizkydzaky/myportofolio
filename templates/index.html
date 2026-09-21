@@ -1,35 +1,74 @@
 {% extends 'base.html' %}
 
+{% block meta %}
+    <title>Rizky Dzaky - Portfolio</title>
+{% endblock meta %}
+
 {% block content %}
 <main>
     <section class="hero" id="profile">
         <div class="container hero-grid">
+
             <div class="hero-identity">
-                <p class="hero-kicker">Computer Science &middot; Universitas Indonesia</p>
+                <p class="hero-kicker">
+                    Computer Science &middot; Universitas Indonesia
+                </p>
+
                 <h1>Rizky Dzaky</h1>
             </div>
+
             <div class="hero-photo">
                 <div class="photo-block"></div>
-                <img class="avatar" src="/static/img/idx.jpg" alt="Photo of Rizky Dzaky">
+
+                <img
+                    class="avatar"
+                    src="/static/img/idx.jpg"
+                    alt="Photo of Rizky Dzaky"
+                >
             </div>
+
             <div class="hero-details">
-                <p class="bio">CS student at Universitas Indonesia for longer than planned, now a familiar (and slightly dreaded) face among Fasilkom students as a teaching assistant across several courses.</p>
+                <p class="bio">
+                    Mahasiswa Sistem Informasi Universitas Indonesia yang
+                    tertarik pada pengembangan teknologi dan dunia IT.
+                </p>
+
                 <dl class="meta-list">
                     <div class="meta-row">
                         <dt>NPM</dt>
                         <dd>2506657301</dd>
                     </div>
+
                     <div class="meta-row">
                         <dt>Program</dt>
                         <dd>S1 Sistem Informasi</dd>
                     </div>
                 </dl>
+
                 <div class="social-links">
-                    <a href="https://github.com/rizkydzaky" class="social-link">GitHub</a>
-                    <a href="https://linkedin.com/rizky-dzaky" class="social-link">LinkedIn</a>
-                    <a href="mailto:rizkydzaki011105@gmail.com" class="social-link">Email</a>
+                    <a
+                        href="https://github.com/rizkydzaky"
+                        class="social-link"
+                    >
+                        GitHub
+                    </a>
+
+                    <a
+                        href="https://linkedin.com/rizky-dzaky"
+                        class="social-link"
+                    >
+                        LinkedIn
+                    </a>
+
+                    <a
+                        href="mailto:rizkydzaki011105@gmail.com"
+                        class="social-link"
+                    >
+                        Email
+                    </a>
                 </div>
             </div>
+
         </div>
     </section>
 </main>

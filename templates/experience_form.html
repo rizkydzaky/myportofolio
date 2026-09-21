@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Tambah Experience - Rizky Dzaky</title>
+{% endblock meta %}
+
+{% block content %}
+<main>
+    <section class="experience-section">
+        <div class="container">
+            <p class="section-kicker">Tambahkan pengalaman baru</p>
+            <h1>Tambah Experience</h1>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit">
+                    Tambah Experience
+                </button>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock content %}
