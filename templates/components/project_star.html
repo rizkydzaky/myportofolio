@@ -1,0 +1,16 @@
+<form method="post" action="{% url 'main:toggle_star' project.id %}" class="star-form">
+    {% csrf_token %}
+
+    <button type="submit"
+            class="button button-star{% if project.is_starred %} is-starred{% endif %}">
+        <span aria-hidden="true">★</span>
+
+        {% if project.is_starred %}
+            Unstar
+        {% else %}
+            Star
+        {% endif %}
+
+        <span class="star-count">{{ project.starred_by.count }}</span>
+    </button>
+</form>
