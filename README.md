@@ -46,3 +46,13 @@ Dalam pengerjaan Tugas 3, saya menggunakan AI sebagai alat bantu untuk memahami 
 
 
 Link Gemini : https://share.gemini.google/vmjU27125cc4
+
+## Tugas 4
+*hanya deklarasi AI
+
+- Deklarasi Penggunaan AI
+
+Dalam pengerjaan Tugas 4, saya menggunakan AI sebagai alat bantu untuk memahami dan mengimplementasikan konsep Django, seperti authentication, authorization, Group dan role pengguna, server-side permission checking, serta fitur star/unstar menggunakan ManyToManyField. Saya cukup kesulitan untuk menentukan fitur star/unstar sesuai ketentuan. AI juga digunakan untuk membantu menemukan dan memahami error yang muncul selama proses pengerjaan, serta memberikan arahan dalam menyesuaikan fitur berdasarkan kebutuhan tugas. Saya juga belajar memahai apa itu hak akses guest, user biasa, editor dan Superuser.  Penggunaan AI inilah yang membantu saya untuk mengerjakan tugas 4 PBP ini
+
+
+Link Gemini : https://share.gemini.google/3dlh7sBhTJDP
