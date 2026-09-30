@@ -5,6 +5,7 @@ from main.views import (
     show_main,
     show_projects,
     create_project,
+    create_project_ajax,
     update_project,
     create_experience,
     update_experience,
@@ -24,6 +25,11 @@ urlpatterns = [
     path("", show_main, name="show_main"),
 
     path("projects/add/", create_project, name="create_project"),
+    path(
+        "projects/add-ajax/",
+        create_project_ajax,
+        name="create_project_ajax",
+    ),
     path(
         "projects/<uuid:project_id>/edit/",
         update_project,
