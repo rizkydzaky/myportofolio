@@ -39,5 +39,15 @@
     </footer>
 
     {% include 'components/toast.html' %}
+
+<script>
+    {% for message in messages %}
+        showToast(
+            "Berhasil",
+            "{{ message|escapejs }}",
+            "success"
+        );
+    {% endfor %}
+</script>
 </body>
 </html>

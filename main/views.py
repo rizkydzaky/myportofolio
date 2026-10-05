@@ -8,9 +8,9 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.core import serializers
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+
 
 def is_editor(user):
     return user.is_authenticated and user.groups.filter(name="Editor").exists()
@@ -18,7 +18,6 @@ def is_editor(user):
 
 def show_main(request):
     last_login = request.COOKIES.get("last_login", "Belum pernah login")
-
 
     context = {
         "name": "Rizky Dzaky",
@@ -30,22 +29,13 @@ def show_main(request):
         ),
         "last_login": last_login,
     }
+
     return render(request, "index.html", context)
 
 
 def show_experience(request):
-    json_response = get_experiences_json(request)
-
-    experiences = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-
-    experiences = [experience.object for experience in experiences]
-
     context = {
         "name": "Rizky Dzaky",
-        "experience_list": experiences,
         "is_editor": is_editor(request.user),
     }
 
@@ -65,30 +55,58 @@ def show_projects(request):
 
 
 def get_experiences_json(request):
-    experiences = Experience.objects.all()
+    search_query = request.GET.get("search", "").strip()
 
-    experiences_json = serializers.serialize(
-        "json",
-        experiences,
-    )
+    experiences = Experience.objects.all().order_by("-started_at")
 
-    return HttpResponse(
-        experiences_json,
-        content_type="application/json",
-    )
+    if search_query:
+        experiences = experiences.filter(
+            title__icontains=search_query
+        )
+
+    data = []
+
+    for experience in experiences:
+        data.append({
+            "id": str(experience.id),
+            "title": experience.title,
+            "description": experience.description,
+            "category": experience.category,
+            "category_display": experience.get_category_display(),
+            "thumbnail": experience.thumbnail,
+            "started_at": experience.started_at.strftime("%d %B %Y"),
+            "ended_at": (
+                experience.ended_at.strftime("%d %B %Y")
+                if experience.ended_at
+                else None
+            ),
+            "is_ongoing": experience.is_ongoing,
+        })
+
+    return JsonResponse(data, safe=False)
+
 
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
-    projects = Project.objects.prefetch_related('starred_by').all()
+    projects = Project.objects.prefetch_related("starred_by").all()
 
     if title_query:
         projects = projects.filter(title__icontains=title_query)
 
     data = []
+
     for project in projects:
         starred_users = project.starred_by.all()
-        is_starred = request.user in starred_users if request.user.is_authenticated else False
-        starred_by_names = ", ".join([u.username for u in starred_users])
+
+        is_starred = (
+            request.user in starred_users
+            if request.user.is_authenticated
+            else False
+        )
+
+        starred_by_names = ", ".join(
+            [user.username for user in starred_users]
+        )
 
         data.append({
             "pk": str(project.id),
@@ -106,6 +124,7 @@ def get_projects_json(request):
 
     return JsonResponse(data, safe=False)
 
+
 @login_required(login_url="/login/")
 def create_project(request):
     if not request.user.is_superuser:
@@ -122,6 +141,7 @@ def create_project(request):
         "name": "Rizky Dzaky",
         "form": form,
     }
+
     return render(request, "projects_form.html", context)
 
 
@@ -143,6 +163,7 @@ def update_project(request, project_id):
         "form": form,
         "project": project,
     }
+
     return render(request, "projects_form.html", context)
 
 
@@ -162,7 +183,9 @@ def create_experience(request):
         "name": "Rizky Dzaky",
         "form": form,
     }
+
     return render(request, "experience_form.html", context)
+
 
 @login_required(login_url="/login/")
 def update_experience(request, experience_id):
@@ -182,11 +205,14 @@ def update_experience(request, experience_id):
         "form": form,
         "experience": experience,
     }
+
     return render(request, "experience_form.html", context)
+
 
 @login_required(login_url="/login/")
 def delete_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
+
     if not request.user.is_superuser:
         raise PermissionDenied
 
@@ -202,7 +228,7 @@ def delete_experience(request, experience_id):
 def delete_project(request, project_id):
     if not request.user.is_superuser:
         raise PermissionDenied
-    
+
     project = get_object_or_404(Project, pk=project_id)
 
     if request.method == "POST":
@@ -225,6 +251,7 @@ def toggle_star(request, project_id):
 
     return redirect("main:show_projects")
 
+
 def register(request):
     form = UserCreationForm(request.POST or None)
 
@@ -237,7 +264,9 @@ def register(request):
         "name": "Rizky Dzaky",
         "form": form,
     }
+
     return render(request, "register.html", context)
+
 
 def login_user(request):
     form = AuthenticationForm(request, data=request.POST or None)
@@ -247,6 +276,7 @@ def login_user(request):
         messages.success(request, "Berhasil login!")
 
         response = redirect("main:show_main")
+
         response.set_cookie(
             "last_login",
             datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -258,7 +288,9 @@ def login_user(request):
         "name": "Rizky Dzaky",
         "form": form,
     }
+
     return render(request, "login.html", context)
+
 
 def logout_user(request):
     logout(request)
@@ -269,11 +301,17 @@ def logout_user(request):
 
     return response
 
+
 @require_POST
 def create_project_ajax(request):
     if not request.user.is_superuser:
         return JsonResponse(
-            {"message": "Hanya pemilik portofolio yang dapat menambahkan proyek."},
+            {
+                "message": (
+                    "Hanya pemilik portofolio yang dapat "
+                    "menambahkan proyek."
+                )
+            },
             status=403,
         )
 
@@ -291,6 +329,53 @@ def create_project_ajax(request):
         )
 
     return JsonResponse(
-        {"errors": form.errors.get_json_data()},
+        {
+            "errors": form.errors.get_json_data(),
+        },
+        status=400,
+    )
+
+
+@require_POST
+def create_experience_ajax(request):
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {
+                "message": (
+                    "Kamu harus login untuk menambahkan experience."
+                )
+            },
+            status=403,
+        )
+
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "message": (
+                    "Hanya pemilik portofolio yang dapat "
+                    "menambahkan experience."
+                )
+            },
+            status=403,
+        )
+
+    form = ExperienceForm(request.POST)
+
+    if form.is_valid():
+        experience = form.save()
+
+        return JsonResponse(
+            {
+                "message": "Experience berhasil ditambahkan.",
+                "id": str(experience.id),
+            },
+            status=201,
+        )
+
+    return JsonResponse(
+        {
+            "message": "Data experience tidak valid.",
+            "errors": form.errors.get_json_data(),
+        },
         status=400,
     )

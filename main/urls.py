@@ -8,6 +8,7 @@ from main.views import (
     create_project_ajax,
     update_project,
     create_experience,
+    create_experience_ajax,
     update_experience,
     delete_experience,
     get_experiences_json,
@@ -21,28 +22,86 @@ from main.views import (
 
 app_name = "main"
 
-urlpatterns = [
-    path("", show_main, name="show_main"),
 
-    path("projects/add/", create_project, name="create_project"),
+urlpatterns = [
+    path(
+        "",
+        show_main,
+        name="show_main",
+    ),
+
+    # =========================
+    # PROJECT
+    # =========================
+
+    path(
+        "projects/",
+        show_projects,
+        name="show_projects",
+    ),
+
+    path(
+        "projects/add/",
+        create_project,
+        name="create_project",
+    ),
+
     path(
         "projects/add-ajax/",
         create_project_ajax,
         name="create_project_ajax",
     ),
+
     path(
         "projects/<uuid:project_id>/edit/",
         update_project,
         name="update_project",
     ),
 
-    path("experience/", show_experience, name="show_experience"),
-    path("experience/add/", create_experience, name="create_experience"),
+    path(
+        "api/projects/",
+        get_projects_json,
+        name="get_projects_json",
+    ),
+
+    path(
+        "projects/<uuid:project_id>/delete/",
+        delete_project,
+        name="delete_project",
+    ),
+
+    path(
+        "projects/<uuid:project_id>/star/",
+        toggle_star,
+        name="toggle_star",
+    ),
+
+    # =========================
+    # EXPERIENCE
+    # =========================
+
+    path(
+        "experience/",
+        show_experience,
+        name="show_experience",
+    ),
+
+    path(
+        "experience/add/",
+        create_experience,
+        name="create_experience",
+    ),
 
     path(
         "api/experiences/",
         get_experiences_json,
         name="get_experiences_json",
+    ),
+
+    path(
+        "api/experiences/create/",
+        create_experience_ajax,
+        name="create_experience_ajax",
     ),
 
     path(
@@ -57,26 +116,25 @@ urlpatterns = [
         name="delete_experience",
     ),
 
-    path("projects/", show_projects, name="show_projects"),
+    # =========================
+    # AUTHENTICATION
+    # =========================
+
     path(
-        "api/projects/",
-        get_projects_json,
-        name="get_projects_json",
+        "register/",
+        register,
+        name="register",
     ),
 
     path(
-        "projects/<uuid:project_id>/delete/",
-        delete_project,
-        name="delete_project",
+        "login/",
+        login_user,
+        name="login",
     ),
 
-    path("register/", register, name="register"),
-    path("login/", login_user, name="login"),
-    path("logout/", logout_user, name="logout"),
-
     path(
-        "projects/<uuid:project_id>/star/",
-        toggle_star,
-        name="toggle_star",
+        "logout/",
+        logout_user,
+        name="logout",
     ),
 ]

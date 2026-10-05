@@ -5,77 +5,1108 @@
 {% endblock meta %}
 
 {% block content %}
+
 <main>
+
     <section class="experience-section" id="experience">
+
         <div class="container">
-            <p class="section-kicker">Perjalanan saya sejauh ini</p>
+
+            <p class="section-kicker">
+                Perjalanan saya sejauh ini
+            </p>
+
 
             <div class="project-header">
-                <h1>Experience</h1>
+
+                <h1>
+                    Experience
+                </h1>
 
                 {% if user.is_superuser %}
-                    <a href="{% url 'main:create_experience' %}"
-                       class="button project-add-button">
+
+                    <button
+                        type="button"
+                        class="button project-add-button"
+                        id="open-experience-modal"
+                    >
                         <span aria-hidden="true">+</span>
                         Tambah Experience
-                    </a>
+                    </button>
+
                 {% endif %}
+
             </div>
 
-            <div class="experience-grid">
-                {% for experience in experience_list %}
-                    <article class="experience-card">
 
-                        <span class="experience-category">
-                            {{ experience.get_category_display }}
-                        </span>
+            <div class="experience-search">
 
-                        <h2>{{ experience.title }}</h2>
+                <input
+                    type="text"
+                    id="experience-search"
+                    placeholder="Cari experience..."
+                    autocomplete="off"
+                >
 
-                        <p class="experience-description">
-                            {{ experience.description }}
-                        </p>
-
-                        {% if experience.is_ongoing %}
-                            <p class="experience-status">
-                                Sedang berlangsung
-                            </p>
-                        {% else %}
-                            <p class="experience-status">
-                                Selesai
-                            </p>
-                        {% endif %}
-
-                        <div class="project-actions">
-
-                            {% if user.is_superuser or is_editor %}
-                                <a href="{% url 'main:update_experience' experience.id %}"
-                                   class="button">
-                                    Edit
-                                </a>
-                            {% endif %}
-
-                            {% if user.is_superuser %}
-                                <form method="POST"
-                                      action="{% url 'main:delete_experience' experience.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="button">
-                                        Delete
-                                    </button>
-                                </form>
-                            {% endif %}
-
-                        </div>
-
-                    </article>
-
-                {% empty %}
-                    <p class="empty-state">
-                        Belum ada pengalaman yang ditambahkan.
-                    </p>
-                {% endfor %}
             </div>
+
+
+            <p
+                id="experience-loading"
+                class="loading-state"
+            >
+                Memuat experience...
+            </p>
+
+
+            <p
+                id="experience-error"
+                class="error-state"
+                hidden
+            >
+                Gagal memuat experience.
+            </p>
+
+
+            <p
+                id="experience-empty"
+                class="empty-state"
+                hidden
+            >
+                Belum ada experience yang ditemukan.
+            </p>
+
+
+
+            <div
+                class="experience-grid"
+                id="experience-list"
+            >
+            </div>
+
         </div>
+
     </section>
+
+
+    {% if user.is_superuser %}
+
+    <div
+        id="experience-modal"
+        class="modal"
+        hidden
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Tambah Experience
+                </h2>
+
+                <button
+                    type="button"
+                    id="close-experience-modal"
+                    class="modal-close"
+                    aria-label="Tutup modal"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <form id="experience-form">
+
+                {% csrf_token %}
+
+
+                <div class="form-group">
+
+                    <label for="experience-title">
+                        Nama Experience
+                    </label>
+
+                    <input
+                        type="text"
+                        id="experience-title"
+                        name="title"
+                        maxlength="255"
+                        placeholder="Staff Humas"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group">
+
+                    <label for="experience-description">
+                        Deskripsi
+                    </label>
+
+                    <textarea
+                        id="experience-description"
+                        name="description"
+                        rows="4"
+                        placeholder="Ceritakan pengalamanmu"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="experience-category">
+                        Kategori
+                    </label>
+
+                    <select
+                        id="experience-category"
+                        name="category"
+                        required
+                    >
+
+                        <option value="internship">
+                            Internship
+                        </option>
+
+                        <option value="research">
+                            Research
+                        </option>
+
+                        <option value="volunteer">
+                            Volunteer
+                        </option>
+
+                        <option value="part-time">
+                            Part-Time
+                        </option>
+
+                        <option value="full-time" selected>
+                            Full-Time
+                        </option>
+
+                        <option value="freelance">
+                            Freelance
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- ENDED AT -->
+
+                <div class="form-group">
+
+                    <label for="experience-ended-at">
+                        Tanggal Selesai
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="experience-ended-at"
+                        name="ended_at"
+                    >
+
+                </div>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="button"
+                        id="cancel-experience-modal"
+                    >
+                        Batal
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="button"
+                    >
+                        Tambah Experience
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
 </main>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+
+        const experienceList =
+            document.getElementById(
+                "experience-list"
+            );
+
+        const loadingState =
+            document.getElementById(
+                "experience-loading"
+            );
+
+        const errorState =
+            document.getElementById(
+                "experience-error"
+            );
+
+        const emptyState =
+            document.getElementById(
+                "experience-empty"
+            );
+
+        const searchInput =
+            document.getElementById(
+                "experience-search"
+            );
+
+
+        /* =====================================
+           USER PERMISSION
+        ===================================== */
+
+        const canEditExperience =
+            "{{ user.is_superuser|yesno:'true,false' }}" === "true" ||
+            "{{ is_editor|yesno:'true,false' }}" === "true";
+
+        const canDeleteExperience =
+            "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+
+
+        /* =====================================
+           URL TEMPLATE
+        ===================================== */
+
+        const updateExperienceUrlTemplate =
+            "{% url 'main:update_experience' '00000000-0000-0000-0000-000000000000' %}";
+
+
+        const deleteExperienceUrlTemplate =
+            "{% url 'main:delete_experience' '00000000-0000-0000-0000-000000000000' %}";
+
+
+        /* =====================================
+           ESCAPE HTML
+        ===================================== */
+
+        function escapeHtml(value) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.textContent =
+                value ?? "";
+
+            return div.innerHTML;
+        }
+
+
+        /* =====================================
+           GET URL
+        ===================================== */
+
+        function getExperienceUrl(
+            template,
+            experienceId
+        ) {
+
+            return template.replace(
+                "00000000-0000-0000-0000-000000000000",
+                encodeURIComponent(
+                    experienceId
+                )
+            );
+
+        }
+
+
+        /* =====================================
+           FETCH EXPERIENCE
+        ===================================== */
+
+        async function fetchExperiences(
+            searchQuery = ""
+        ) {
+
+
+            loadingState.hidden =
+                false;
+
+            errorState.hidden =
+                true;
+
+            emptyState.hidden =
+                true;
+
+            experienceList.innerHTML =
+                "";
+
+
+            try {
+
+
+                const url =
+                    `{% url 'main:get_experiences_json' %}?search=${encodeURIComponent(searchQuery)}`;
+
+
+                const response =
+                    await fetch(
+                        url
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Gagal mengambil data experience."
+                    );
+
+                }
+
+
+                const experiences =
+                    await response.json();
+
+
+                loadingState.hidden =
+                    true;
+
+
+                /* =================================
+                   EMPTY STATE
+                ================================= */
+
+                if (
+                    experiences.length === 0
+                ) {
+
+                    emptyState.hidden =
+                        false;
+
+                    return;
+
+                }
+
+
+                /* =================================
+                   RENDER EXPERIENCE
+                ================================= */
+
+                experiences.forEach(
+                    function (experience) {
+
+
+                        const card =
+                            document.createElement(
+                                "article"
+                            );
+
+
+                        card.className =
+                            "experience-card";
+
+
+                        /* =========================
+                           DATA
+                        ========================= */
+
+                        const category =
+                            escapeHtml(
+                                experience.category_display
+                            );
+
+
+                        const title =
+                            escapeHtml(
+                                experience.title
+                            );
+
+
+                        const description =
+                            escapeHtml(
+                                experience.description
+                            );
+
+
+                        const startedAt =
+                            escapeHtml(
+                                experience.started_at
+                            );
+
+
+                        const endedAt =
+                            experience.ended_at
+                                ? escapeHtml(
+                                    experience.ended_at
+                                )
+                                : "Sekarang";
+
+
+                        const status =
+                            experience.is_ongoing
+                                ? "Sedang berlangsung"
+                                : "Selesai";
+
+
+                        /* =========================
+                           CARD CONTENT
+                        ========================= */
+
+                        card.innerHTML = `
+
+                            <span
+                                class="experience-category"
+                            >
+                                ${category}
+                            </span>
+
+
+                            <h2>
+                                ${title}
+                            </h2>
+
+
+                            <p
+                                class="experience-description"
+                            >
+                                ${description}
+                            </p>
+
+
+                            <p
+                                class="experience-status"
+                            >
+                                ${escapeHtml(status)}
+                            </p>
+
+
+                            <p
+                                class="experience-date"
+                            >
+                                ${startedAt}
+                                -
+                                ${endedAt}
+                            </p>
+
+                        `;
+
+
+                        /* =========================
+                           ACTIONS
+                        ========================= */
+
+                        if (
+                            canEditExperience ||
+                            canDeleteExperience
+                        ) {
+
+
+                            const actions =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            actions.className =
+                                "experience-actions";
+
+
+                            /* =====================
+                               EDIT
+                            ===================== */
+
+                            if (
+                                canEditExperience
+                            ) {
+
+
+                                const editLink =
+                                    document.createElement(
+                                        "a"
+                                    );
+
+
+                                editLink.href =
+                                    getExperienceUrl(
+                                        updateExperienceUrlTemplate,
+                                        experience.id
+                                    );
+
+
+                                editLink.className =
+                                    "button";
+
+
+                                editLink.textContent =
+                                    "Edit";
+
+
+                                actions.appendChild(
+                                    editLink
+                                );
+
+                            }
+
+
+                            /* =====================
+                               DELETE
+                            ===================== */
+
+                            if (
+                                canDeleteExperience
+                            ) {
+
+
+                                const deleteForm =
+                                    document.createElement(
+                                        "form"
+                                    );
+
+
+                                deleteForm.method =
+                                    "POST";
+
+
+                                deleteForm.action =
+                                    getExperienceUrl(
+                                        deleteExperienceUrlTemplate,
+                                        experience.id
+                                    );
+
+
+                                deleteForm.style.display =
+                                    "inline";
+
+
+                                /* =================
+                                   CSRF
+                                ================= */
+
+                                const csrfToken =
+                                    document.querySelector(
+                                        "[name=csrfmiddlewaretoken]"
+                                    );
+
+
+                                if (
+                                    csrfToken
+                                ) {
+
+
+                                    const csrfInput =
+                                        document.createElement(
+                                            "input"
+                                        );
+
+
+                                    csrfInput.type =
+                                        "hidden";
+
+
+                                    csrfInput.name =
+                                        "csrfmiddlewaretoken";
+
+
+                                    csrfInput.value =
+                                        csrfToken.value;
+
+
+                                    deleteForm.appendChild(
+                                        csrfInput
+                                    );
+
+                                }
+
+
+                                /* =================
+                                   DELETE BUTTON
+                                ================= */
+
+                                const deleteButton =
+                                    document.createElement(
+                                        "button"
+                                    );
+
+
+                                deleteButton.type =
+                                    "submit";
+
+
+                                deleteButton.className =
+                                    "button";
+
+
+                                deleteButton.textContent =
+                                    "Delete";
+
+
+                                deleteForm.appendChild(
+                                    deleteButton
+                                );
+
+
+                                /* =================
+                                   CONFIRM
+                                ================= */
+
+                                deleteForm.addEventListener(
+                                    "submit",
+                                    function (event) {
+
+
+                                        const confirmed =
+                                            window.confirm(
+                                                "Yakin ingin menghapus experience ini?"
+                                            );
+
+
+                                        if (
+                                            !confirmed
+                                        ) {
+
+                                            event.preventDefault();
+
+                                        }
+
+                                    }
+                                );
+
+
+                                actions.appendChild(
+                                    deleteForm
+                                );
+
+                            }
+
+
+                            card.appendChild(
+                                actions
+                            );
+
+                        }
+
+
+                        /* =========================
+                           APPEND CARD
+                        ========================= */
+
+                        experienceList.appendChild(
+                            card
+                        );
+
+                    }
+                );
+
+
+            } catch (error) {
+
+
+                console.error(
+                    error
+                );
+
+
+                loadingState.hidden =
+                    true;
+
+                errorState.hidden =
+                    false;
+
+            }
+
+        }
+
+
+        /* =====================================
+           DEBOUNCE SEARCH
+        ===================================== */
+
+        let searchTimeout;
+
+
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+
+                clearTimeout(
+                    searchTimeout
+                );
+
+
+                searchTimeout =
+                    setTimeout(
+                        function () {
+
+
+                            fetchExperiences(
+                                searchInput.value.trim()
+                            );
+
+
+                        },
+                        400
+                    );
+
+            }
+        );
+
+
+        /* =====================================
+           INITIAL FETCH
+        ===================================== */
+
+        fetchExperiences();
+
+
+        /* =====================================
+           MODAL ELEMENT
+        ===================================== */
+
+        const modal =
+            document.getElementById(
+                "experience-modal"
+            );
+
+
+        const openModalButton =
+            document.getElementById(
+                "open-experience-modal"
+            );
+
+
+        const closeModalButton =
+            document.getElementById(
+                "close-experience-modal"
+            );
+
+
+        const cancelModalButton =
+            document.getElementById(
+                "cancel-experience-modal"
+            );
+
+
+        /* =====================================
+           OPEN MODAL
+        ===================================== */
+
+        if (
+            openModalButton
+        ) {
+
+            openModalButton.addEventListener(
+                "click",
+                function () {
+
+                    modal.hidden =
+                        false;
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           CLOSE MODAL
+        ===================================== */
+
+        if (
+            closeModalButton
+        ) {
+
+            closeModalButton.addEventListener(
+                "click",
+                function () {
+
+                    modal.hidden =
+                        true;
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           CANCEL MODAL
+        ===================================== */
+
+        if (
+            cancelModalButton
+        ) {
+
+            cancelModalButton.addEventListener(
+                "click",
+                function () {
+
+                    modal.hidden =
+                        true;
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           CREATE EXPERIENCE
+        ===================================== */
+
+        const experienceForm =
+            document.getElementById(
+                "experience-form"
+            );
+
+
+        if (
+            experienceForm
+        ) {
+
+
+            experienceForm.addEventListener(
+                "submit",
+                async function (event) {
+
+
+                    event.preventDefault();
+
+
+                    const formData =
+                        new FormData(
+                            experienceForm
+                        );
+
+
+                    try {
+
+
+                        const response =
+                            await fetch(
+                                "{% url 'main:create_experience_ajax' %}",
+                                {
+                                    method: "POST",
+
+                                    body: formData,
+
+                                    headers: {
+                                        "X-Requested-With":
+                                            "XMLHttpRequest"
+                                    }
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        /* =========================
+                           SUCCESS 201
+                        ========================= */
+
+                        if (
+                            response.status === 201
+                        ) {
+
+
+                            modal.hidden =
+                                true;
+
+
+                            experienceForm.reset();
+
+
+                            await fetchExperiences(
+                                searchInput.value.trim()
+                            );
+
+
+                            if (
+                                typeof showToast ===
+                                "function"
+                            ) {
+
+                                showToast(
+                                    data.message,
+                                    "success"
+                                );
+
+                            }
+
+
+                            return;
+
+                        }
+
+
+                        /* =========================
+                           VALIDATION 400
+                        ========================= */
+
+                        if (
+                            response.status === 400
+                        ) {
+
+
+                            let message =
+                                data.message ||
+                                "Data experience tidak valid.";
+
+
+                            if (
+                                data.errors
+                            ) {
+
+
+                                const errors =
+                                    [];
+
+
+                                Object.values(
+                                    data.errors
+                                ).forEach(
+                                    function (
+                                        fieldErrors
+                                    ) {
+
+
+                                        fieldErrors.forEach(
+                                            function (
+                                                error
+                                            ) {
+
+                                                errors.push(
+                                                    error.message
+                                                );
+
+                                            }
+                                        );
+
+                                    }
+                                );
+
+
+                                if (
+                                    errors.length > 0
+                                ) {
+
+                                    message =
+                                        errors.join(
+                                            " "
+                                        );
+
+                                }
+
+                            }
+
+
+                            if (
+                                typeof showToast ===
+                                "function"
+                            ) {
+
+                                showToast(
+                                    message,
+                                    "error"
+                                );
+
+                            }
+
+
+                            return;
+
+                        }
+
+
+                        /* =========================
+                           PERMISSION 403
+                        ========================= */
+
+                        if (
+                            response.status === 403
+                        ) {
+
+
+                            if (
+                                typeof showToast ===
+                                "function"
+                            ) {
+
+                                showToast(
+                                    data.message ||
+                                    "Kamu tidak memiliki izin.",
+                                    "error"
+                                );
+
+                            }
+
+
+                            return;
+
+                        }
+
+
+                        throw new Error(
+                            "Terjadi kesalahan pada server."
+                        );
+
+
+                    } catch (error) {
+
+
+                        console.error(
+                            error
+                        );
+
+
+                        if (
+                            typeof showToast ===
+                            "function"
+                        ) {
+
+                            showToast(
+                                "Gagal menambahkan experience.",
+                                "error"
+                            );
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+
+);
+
+</script>
+
 {% endblock content %}

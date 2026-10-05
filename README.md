@@ -56,3 +56,30 @@ Dalam pengerjaan Tugas 4, saya menggunakan AI sebagai alat bantu untuk memahami 
 
 
 Link Gemini : https://share.gemini.google/3dlh7sBhTJDP
+
+
+## Tugas 5
+
+1. Debouncing adalah teknik untuk menunda eksekusi suatu fungsi sampai pengguna berhenti melakukan suatu aktivitas selama waktu tertentu. Pada fitur pencarian AJAX, debouncing digunakan agar request ke server tidak dikirim setiap kali pengguna mengetik satu karakter.
+
+Contohnya, ketika pengguna mengetik `Experience`, tanpa debouncing bisa terjadi banyak request AJAX untuk setiap perubahan karakter. Dengan debouncing, request hanya dikirim setelah pengguna berhenti mengetik selama beberapa saat. Hal ini dapat mengurangi jumlah request ke server, meningkatkan efisiensi, dan membuat fitur pencarian lebih responsif.
+
+2. `fetch()` merupakan operasi asynchronous yang membutuhkan waktu untuk mendapatkan response dari server. Penggunaan `await` membuat JavaScript menunggu hingga proses tersebut selesai sebelum melanjutkan ke baris kode berikutnya.
+
+Dengan `await`, kita dapat langsung memperoleh response dari `fetch()` dan kemudian memprosesnya, misalnya dengan menggunakan `await response.json()` untuk mendapatkan data JSON.
+
+Jika tidak menggunakan `await`, `fetch()` akan mengembalikan sebuah `Promise`, bukan response yang sudah selesai. Akibatnya, kode yang membutuhkan hasil response dapat dijalankan sebelum data dari server tersedia sehingga dapat menyebabkan error atau hasil yang tidak sesuai.
+
+3. XSS (*Cross-Site Scripting*) adalah serangan ketika penyerang memasukkan kode atau script berbahaya ke dalam data yang kemudian ditampilkan dan dijalankan oleh browser pengguna.
+
+Data yang ditampilkan melalui AJAX/JavaScript lebih rentan jika developer memasukkan data langsung ke dalam HTML tanpa melakukan escaping. Berbeda dengan data yang dirender melalui template Django, Django secara default melakukan HTML escaping terhadap nilai yang ditampilkan menggunakan template sehingga karakter HTML tertentu tidak langsung dianggap sebagai kode HTML.
+
+Pada implementasi AJAX, data JSON diterima oleh JavaScript dan kemudian dapat dimasukkan ke halaman menggunakan `innerHTML`. Jika data tersebut tidak di-*escape*, input berbahaya dapat dianggap sebagai HTML dan berpotensi menjalankan script. Oleh karena itu, pada implementasi ini digunakan fungsi `escapeHtml()` sebelum memasukkan data ke HTML, serta `strip_tags()` pada `ModelForm` untuk membersihkan input dari tag HTML.
+
+
+- Deklarasi Penggunaan AI
+
+Dalam pengerjaan Tugas 5, saya menggunakan AI sebagai alat bantu untuk memahami dan mengimplementasikan AJAX, fetch(), JsonResponse, debouncing, modal, dan toast pada halaman Experience. AI juga membantu saya dalam memahami dan mengatasi error selama proses pengerjaan, terutama pada fitur pencarian, penambahan data, permission, dan pencegahan XSS. Penggunaan AI membantu saya memahami konsep sekaligus menyelesaikan Tugas 5 PBP ini.
+
+
+Link Gemini : https://share.gemini.google/KhhDN0p2wz1p
