@@ -678,3 +678,7 @@ h1, .brand {
         text-align: center;
     }
 }
+
+.hide {
+    display: none !important;
+}
