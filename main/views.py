@@ -37,6 +37,7 @@ def show_experience(request):
     context = {
         "name": "Rizky Dzaky",
         "is_editor": is_editor(request.user),
+        "is_owner": request.user.is_authenticated and request.user.is_superuser,
     }
 
     return render(request, "experience.html", context)
